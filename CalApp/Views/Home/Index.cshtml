@@ -1,31 +1,293 @@
-﻿@{
-    ViewBag.Title = "Home Page";
-}
+﻿<style>
+    .cell {
+        padding: 2px 6px;
+        margin: 2px 6px;
+    }
 
-<div class="jumbotron">
-    <h1>ASP.NET</h1>
-    <p class="lead">ASP.NET is a free web framework for building great Web sites and Web applications using HTML, CSS and JavaScript.</p>
-    <p><a href="https://asp.net" class="btn btn-primary btn-lg">Learn more &raquo;</a></p>
-</div>
+    .sun {
+        color: red;
+    }
+    .cr{
+        color:#94821e
+    }
+    .bl{
+        color:#08195e
+    }
+    .lbl{
+        color:#49b3fb
+    }
 
-<div class="row">
-    <div class="col-md-4">
-        <h2>Getting started</h2>
-        <p>
-            ASP.NET MVC gives you a powerful, patterns-based way to build dynamic websites that
-            enables a clean separation of concerns and gives you full control over markup
-            for enjoyable, agile development.
-        </p>
-        <p><a class="btn btn-default" href="https://go.microsoft.com/fwlink/?LinkId=301865">Learn more &raquo;</a></p>
+    /* The Modal (background) */
+    .modal {
+        display: none; /* Hidden by default */
+        position: fixed; /* Stay in place */
+        z-index: 1; /* Sit on top */
+        padding-top: 100px; /* Location of the box */
+        left: 0;
+        top: 0;
+        width: 100%; /* Full width */
+        height: 100%; /* Full height */
+        overflow: auto; /* Enable scroll if needed */
+        background-color: rgb(0,0,0); /* Fallback color */
+        background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+    }
+
+    /* Modal Content */
+    .modal-content {
+        background-color: #fefefe;
+        margin: auto;
+        padding: 20px;
+        border: 1px solid #888;
+        width: 80%;
+    }
+
+    /* The Close Button */
+    .close {
+        color: #aaaaaa;
+        float: right;
+        font-size: 28px;
+        font-weight: bold;
+    }
+
+        .close:hover,
+        .close:focus {
+            color: #000;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+</style>
+
+<div class="container-fluid">
+
+    <!-- The Modal -->
+    <div id="myModal" class="modal">
+
+        <!-- Modal content -->
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <p>Some text in the Modal..</p>
+        </div>
+
     </div>
-    <div class="col-md-4">
-        <h2>Get more libraries</h2>
-        <p>NuGet is a free Visual Studio extension that makes it easy to add, remove, and update libraries and tools in Visual Studio projects.</p>
-        <p><a class="btn btn-default" href="https://go.microsoft.com/fwlink/?LinkId=301866">Learn more &raquo;</a></p>
+
+    <div class="row">&nbsp;</div>
+    <div class="row">
+        <div class="col-md-8 col-md-offset-2">
+            <table>
+                <tr>
+                    <td>
+                        <button class="btn btn-primary" onclick="ChangeYear(-1)"><i class="glyphicon glyphicon-menu-left"></i></button>
+                        <label id="lblyear"></label>
+                        <button class="btn btn-primary" onclick="ChangeYear(1)"><i class="glyphicon glyphicon-menu-right"></i></button>
+                    </td>
+                    <td>
+                        <table id="months" class="table" border="2"></table>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <table border="2">
+                            @{
+                                int c = 1;
+                                for (int i = 1; i <= 7; i++)
+                                {
+                                    <tr>
+                                        @for (int j = 0; j <= 31; j += 7)
+                                        {
+                                            c = i + j;
+                                            string className = "";
+                                            if (c == 29)
+                                            {
+                                                className = "cr";
+                                            }
+                                            else if (c == 30)
+                                            {
+                                                className = "bl";
+                                            }
+                                            else if (c == 31)
+                                            {
+                                                className = "lbl";
+                                            }
+                                            if (c > 31)
+                                            {
+                                                <td class="cell @className">&nbsp;</td>
+                                            }
+                                            else
+                                            {
+                                                <td class="cell @className"><span id="cell_@c" class="dayId">@c</span></td>
+                                            }
+
+                                            c = i + 7;
+                                        }
+                                    </tr>
+
+                                }
+                            }
+                        </table>
+                    </td>
+                    <td>
+                        <table id="days" border="2"></table>
+                    </td>
+                </tr>
+            </table>
+
+            <script>
+                //logic for years
+                var year = new Date();
+                year = year.getFullYear();
+                $("#lblyear").html(year);
+                function ChangeYear(value) {
+                    year += value;
+                    $("#lblyear").html(year);
+                    ShowMonths();
+                }
+
+                //logic for days
+                var d = 0;
+                var arr = ["Mon", "Tue", "Wen", "Thu", "Fri", "Sat", "Sun"];
+                var html = '';
+                for (var r = 0; r < 7; r++) {
+                    html += `<tr>`;
+                    className = '';
+
+                    d = r;
+                    for (var c = 0; c < 7; c++) {
+
+                        if (d == 6) {
+                            className = 'sun';
+                        }
+                        html += `<td class="cell ${className}">${arr[d]}</td>`;
+                        d++;
+                        if (d > 6) {
+                            d = 0;
+                        }
+                        className = '';
+                    }
+                    html += `<tr>`;
+                }
+                $("#days").html(html);
+
+                //logic for the month
+                var months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+                function ShowMonths() {
+                    var currentYear = $("#lblyear").text();
+                    //console.log(currentYear);
+                    var d = 0;
+                    var days = [];
+                    for (var mt = 0; mt < months.length; mt++) {
+                        var day = new Date(currentYear, mt, 1).getDay();
+                        if (day == 0) {
+                            day = 6;
+                        }
+                        else {
+                            day -= 1;
+                        }
+                        var clName = "";
+                        if (mt == 0 || mt == 2 || mt == 4 || mt == 6 || mt == 7 || mt == 9 || mt == 11) {
+                            clName = "lbl";
+                        }
+                        else if (mt == 3 || mt == 5 || mt == 8 || mt == 10) {
+                            clName = "bl"
+                        }
+                        else {
+                            clName = "cr";
+                        }
+                        var obj = {
+                            "Month": months[mt],
+                            "Day": day,
+                            "ClassName": clName
+                        };
+                        days.push(obj);
+                        console.log(obj);
+                    }
+
+                    var html = '';
+
+                    for (var r = 0; r < 3; r++) {
+                        html += '<tr>';
+                        for (var cell = 0; cell < 7; cell++) {
+                            var dVal = days.find(ele => ele["Day"] == cell);
+                            if (dVal != undefined) {
+                                console.log(`found ${dVal["Month"]} - ${cell}`);
+                                html += `<td onClick="ChangeDays('${dVal["Month"]}')" class="${dVal["ClassName"]}">${dVal["Month"]}</td>`;
+                                //days.splice(cell, 1);
+                                for (var i = 0; i < days.length; i++) {
+                                    if (days[i]["Month"] == dVal["Month"]) {
+                                        days.splice(i, 1);
+                                    }
+                                }
+                            } else {
+                                html += "<td class='cell'>&nbsp;</td>";
+                            }
+
+
+                        }
+                        html += '</tr>';
+                    }
+
+                    console.log(html);
+                    $("#months").html(html);
+
+                }
+                ShowMonths();
+
+                function ChangeDays(month) {
+
+                    var found = months.find(a => a == month);
+                    //console.log(found);
+                    var mt = months.indexOf(found);
+                    if (mt == 0 || mt == 2 || mt == 4 || mt == 6 || mt == 7 || mt == 9 || mt == 11) {
+                        $("#cell_31").show();
+                        $("#cell_30").show();
+                    }
+                    else if (mt == 3 || mt == 5 || mt == 8 || mt == 10) {
+                        $("#cell_31").hide();
+
+                    }
+                    else {
+
+                        $("#cell_31").hide();
+                        $("#cell_30").hide();
+                    }
+                }
+
+                $(".dayId").click(function () {
+                    var v = $(".dayId").text;
+                    if (v == "31" || v == "30" || v == "29") {
+
+                    }
+                    else {
+                        $(".dayId").css({ "color": "" })
+                    }
+                    $(this).css({ "color": "blue" });
+                });
+
+                // Get the modal
+                var modal = document.getElementById("myModal");
+                
+                // Get the <span> element that closes the modal
+                var span = document.getElementsByClassName("close")[0];
+
+                // When the user clicks the button, open the modal 
+                $(".dayId").click(function () {
+                    modal.style.display = "block";
+                });
+
+                // When the user clicks on <span> (x), close the modal
+                span.onclick = function () {
+                    modal.style.display = "none";
+                }
+
+                // When the user clicks anywhere outside of the modal, close it
+                window.onclick = function (event) {
+                    if (event.target == modal) {
+                        modal.style.display = "none";
+                    }
+                }
+            </script>
+        </div>
     </div>
-    <div class="col-md-4">
-        <h2>Web Hosting</h2>
-        <p>You can easily find a web hosting company that offers the right mix of features and price for your applications.</p>
-        <p><a class="btn btn-default" href="https://go.microsoft.com/fwlink/?LinkId=301867">Learn more &raquo;</a></p>
-    </div>
+
+
 </div>
